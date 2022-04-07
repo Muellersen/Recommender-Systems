@@ -4,10 +4,9 @@ import pandas as pd
 import numpy as np
 from functools import cmp_to_key
 
+
 class Recommender:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+    def __init__(self):
         self.metadata = pd.read_csv('ml-latest-small/ratings.csv', low_memory=False)
         self.movies = pd.read_csv("ml-latest-small/movies.csv", low_memory=False)
         self.new_user = pd.read_csv("ml-latest-small/new.csv", low_memory=False)
@@ -23,6 +22,9 @@ class Recommender:
         df = pd.DataFrame(data=data)
         self.new_user = df
 
+    def get_movie_names(self) -> tuple:
+        return tuple(self.movies["title"].to_list())
+
     def compare(item1: tuple, item2: tuple):
         if item1[1] < item2[1]:
             return -1
@@ -31,9 +33,7 @@ class Recommender:
         else:
             return 0
 
-
     letter_cmp_key = cmp_to_key(compare)
-
 
     def k_nearest_neighbor(self, k: int, watched_same_movies: int, amount: int) -> list:
         metadata = self.metadata
@@ -83,7 +83,6 @@ class Recommender:
             k_nearest_neighbors += [nearest_neighbor]
 
         return k_nearest_neighbors
-
 
     def recommend(self, amount: int):
         metadata = self.metadata
