@@ -10,6 +10,8 @@ class GUI:
         self.recommender = recommender
         self.all_movies = recommender.get_movie_names()
         self.selected_movies = []
+        self.selected_movies_ids = []
+        self.selected_indices = []
 
     def init_window(self):
         self.root.geometry('1000x500')
@@ -21,7 +23,7 @@ class GUI:
         self.listbox = tk.Listbox(
             self.root,
             listvariable=movies_var,
-            height=9,
+            height=20,
             width=100,
             selectmode='multiple')
         self.listbox.pack()
@@ -41,14 +43,14 @@ class GUI:
 
     def init_rate_button(self):
         self.rate_button = tk.Button(self.root,
-                        text="Bewerten",
-                        command=self.search)
+                        text="Auswahl löschen",
+                        command=self.reset_selection)
         self.rate_button.pack()
 
     def init_recommend_button(self):
         self.recommend_button = tk.Button(self.root,
                         text="Empfehlung",
-                        command=self.recommender.recommend(1))
+                        command=self.start_recommendation)
         self.recommend_button.pack()
 
     def init_label(self):
@@ -60,10 +62,20 @@ class GUI:
         for i, movie in enumerate(movies):
             self.listbox.insert(i, movie)
 
+    def reset_selection(self):
+        self.selected_movies = []
+        self.selected_movies_ids = []
+
     def search(self):
         inp = self.inputtxt.get(1.0, "end-1c")
         search_result = self.recommender.search_movies(inp)
         self.update_list(tuple(search_result))
+
+    def get_movie_ids(self):
+        self.selected_movies_ids = []
+        for movie in self.selected_movies:
+            self.selected_movies_ids += self.recommender.movies.loc[self.recommender.movies["title"] == movie]["movieId"].to_list()
+        print(self.selected_movies_ids)
 
     def items_selected(self, event):
         """ handle item selected event
@@ -74,6 +86,19 @@ class GUI:
 
         print(self.selected_movies)
 
+    def start_recommendation(self):
+        self.get_movie_ids()
+        movie_rating = []
+        for movie in self.selected_movies_ids:
+            movie_rating += [(movie, 5)]
+        self.recommender.create_new_user(1, movie_rating)
+        recommendation = self.recommender.recommend(1)
+        print(recommendation)
+        result = ""
+        for movie in recommendation:
+            result += self.recommender.movies.loc[self.recommender.movies["movieId"] == movie[0]]["title"].to_string() + ", "
+        self.label.config(text = "Empfehlung: "+result)
+
     def init_all(self):
         self.init_window()
         self.init_list()
@@ -81,6 +106,7 @@ class GUI:
         self.init_search_button()
         self.init_rate_button()
         self.init_recommend_button()
+        self.init_label()
 # # create the root window
 # root = tk.Tk()
 # root.geometry('1000x500')

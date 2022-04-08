@@ -128,8 +128,8 @@ def search_movies(name: str):
     return [itm[0] for itm in movie_names.str.findall(name + ".*", flags=re.IGNORECASE) if len(itm)>0]
 
 
-# movies = recommend(5)
+movies = recommend(1)
 
-# for movie in movies:
-#     print(movielist.loc[movielist["movieId"] == movie[0]])
-print(search_movies('Spirit'))
+for movie in movies:
+    print(movielist.loc[movielist["movieId"] == movie[0]])
+# print(search_movies('Spirit'))

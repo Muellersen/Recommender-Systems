@@ -12,15 +12,16 @@ class Recommender:
         self.new_user = pd.read_csv("ml-latest-small/new.csv", low_memory=False)
     
     def create_new_user(self, userId: int, rated_movies: list):
-        data = {"userId": [], "movieId": [], "ratings": []}
+        data = {"userId": [], "movieId": [], "rating": []}
         for movie_and_rating in rated_movies:
             movie_name = movie_and_rating[0]
             rating = movie_and_rating[1]
             data["userId"] += [userId]
             data["movieId"] += [movie_name] # or id?
-            data["ratings"] += [rating]
+            data["rating"] += [rating]
         df = pd.DataFrame(data=data)
         self.new_user = df
+        print(self.new_user)
 
     def get_movie_names(self) -> tuple:
         return tuple(self.movies["title"].to_list())
@@ -79,7 +80,7 @@ class Recommender:
                 if neighbor[1] < nearest_neighbor[1] and neighbor[2] > watched_same_movies:
                     nearest_neighbor = neighbor
                     current_index_of_nearest_neighbor = j
-            del neighbors[current_index_of_nearest_neighbor]
+            if current_index_of_nearest_neighbor != inf: del neighbors[current_index_of_nearest_neighbor]
             k_nearest_neighbors += [nearest_neighbor]
 
         return k_nearest_neighbors
@@ -88,7 +89,8 @@ class Recommender:
         metadata = self.metadata
         new_user = self.new_user
 
-        similar_users = self.k_nearest_neighbor(10, 10, 50)
+        similar_users = self.k_nearest_neighbor(10, 5, 600)
+        print(similar_users)
         movies_of_users_the_new_user_didnt_watch = []
         movie_bucket = {}
         for user in similar_users:
