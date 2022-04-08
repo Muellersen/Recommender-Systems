@@ -126,6 +126,12 @@ class Recommender:
             best_movies += [best_movie]
         return best_movies
 
-    def search_movies(self, name: str) -> list:  # doesnt get the full string of the title
+    def search_movies(self, name: str) -> list:
         movie_names = self.movies["title"]
-        return [itm[0] for itm in movie_names.str.findall(name + ".*", flags=re.IGNORECASE) if len(itm)>0]
+        result = []
+        for movie in movie_names:
+            match = re.search(name+".*", movie, re.IGNORECASE)
+            if match:
+                result += [movie]
+
+        return result

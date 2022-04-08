@@ -72,12 +72,15 @@ class GUI:
         # selected_movies = ", ".join([self.listbox.get(i) for i in selected_indices])
         self.selected_movies = [self.listbox.get(i) for i in selected_indices]
 
+        print(self.selected_movies)
+
     def init_all(self):
         self.init_window()
         self.init_list()
-        self.init_search_button()
         self.init_text_field()
-
+        self.init_search_button()
+        self.init_rate_button()
+        self.init_recommend_button()
 # # create the root window
 # root = tk.Tk()
 # root.geometry('1000x500')
