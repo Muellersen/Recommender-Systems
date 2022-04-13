@@ -25,9 +25,30 @@ class GUI:
             listvariable=movies_var,
             height=20,
             width=100,
-            selectmode='multiple')
+            selectmode='single')
         self.listbox.pack()
         self.listbox.bind('<<ListboxSelect>>', self.items_selected)
+
+    def init_list_of_selected_items(self):
+        selected_movies_var = tk.StringVar(value=self.selected_movies)
+        self.listbox_of_selected_items = tk.Listbox(
+            self.root,
+            listvariable=selected_movies_var,
+            height=20,
+            width=100,
+            selectmode='single')
+        self.listbox_of_selected_items.pack(side="left")
+        self.listbox_of_selected_items.bind('<<ListboxSelect>>', self.items_selected_of_selected_movies_list)
+
+    def init_list_of_recommended_movies(self):
+        recommended = tk.StringVar(value=self.selected_movies)
+        self.listbox_of_recommended_movies = tk.Listbox(
+            self.root,
+            listvariable=recommended,
+            height=20,
+            width=100,
+            selectmode='single')
+        self.listbox_of_recommended_movies.pack(side="right")
 
     def init_text_field(self):
         self.inputtxt = tk.Text(self.root,
@@ -61,6 +82,16 @@ class GUI:
         self.listbox.delete(0, END)
         for i, movie in enumerate(movies):
             self.listbox.insert(i, movie)
+        
+    def update_list_of_selected_movies(self):
+        self.listbox_of_selected_items.delete(0, END)
+        for i, movie in enumerate(self.selected_movies):
+            self.listbox_of_selected_items.insert(i, movie)
+
+    def update_list_of_recommended_movies(self, recommended_movies: list):
+        self.listbox_of_recommended_movies.delete(0, END)
+        for i, movie in enumerate(recommended_movies):
+            self.listbox_of_recommended_movies.insert(i, movie)
 
     def reset_selection(self):
         self.selected_movies = []
@@ -82,9 +113,21 @@ class GUI:
         """
         selected_indices = self.listbox.curselection()
         # selected_movies = ", ".join([self.listbox.get(i) for i in selected_indices])
-        self.selected_movies = [self.listbox.get(i) for i in selected_indices]
-
+        self.selected_movies += [self.listbox.get(i) for i in selected_indices]
+        self.update_list_of_selected_movies()
         print(self.selected_movies)
+
+    def items_selected_of_selected_movies_list(self, event):
+        """ handle item selected event
+        """
+        selected_indices = self.listbox_of_selected_items.curselection()
+        # selected_movies = ", ".join([self.listbox.get(i) for i in selected_indices])
+        movie_to_delete = [self.listbox_of_selected_items.get(i) for i in selected_indices]
+
+        for i, movie in enumerate(self.selected_movies):
+            if movie == movie_to_delete[0]:
+                del self.selected_movies[i]
+        self.update_list_of_selected_movies()
 
     def start_recommendation(self):
         self.get_movie_ids()
@@ -92,12 +135,15 @@ class GUI:
         for movie in self.selected_movies_ids:
             movie_rating += [(movie, 5)]
         self.recommender.create_new_user(1, movie_rating)
-        recommendation = self.recommender.recommend(1)
+        recommendation = self.recommender.recommend(5)
         print(recommendation)
         result = ""
+        result2 = []
         for movie in recommendation:
             result += self.recommender.movies.loc[self.recommender.movies["movieId"] == movie[0]]["title"].to_string() + ", "
+            result2 += [self.recommender.movies.loc[self.recommender.movies["movieId"] == movie[0]]["title"].to_string()]
         self.label.config(text = "Empfehlung: "+result)
+        self.update_list_of_recommended_movies(result2)
 
     def init_all(self):
         self.init_window()
@@ -107,6 +153,9 @@ class GUI:
         self.init_rate_button()
         self.init_recommend_button()
         self.init_label()
+        self.init_list_of_selected_items()
+        self.init_list_of_recommended_movies()#
+
 # # create the root window
 # root = tk.Tk()
 # root.geometry('1000x500')
