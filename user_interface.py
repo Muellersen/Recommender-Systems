@@ -5,10 +5,11 @@ from recommender_system import Recommender
 
 
 class GUI:
-    def __init__(self, recommender: Recommender):
+    def __init__(self, recommender: Recommender, anime=False):
         self.root = tk.Tk()
         self.recommender = recommender
-        self.all_movies = recommender.get_movie_names()
+        self.is_anime = anime
+        self.all_movies = recommender.get_movie_names(anime)
         self.selected_movies = []
         self.selected_movies_ids = []
         self.selected_indices = []
@@ -99,13 +100,17 @@ class GUI:
 
     def search(self):
         inp = self.inputtxt.get(1.0, "end-1c")
-        search_result = self.recommender.search_movies(inp)
+        search_result = self.recommender.search_movies(inp, self.is_anime)
         self.update_list(tuple(search_result))
 
     def get_movie_ids(self):
         self.selected_movies_ids = []
-        for movie in self.selected_movies:
-            self.selected_movies_ids += self.recommender.movies.loc[self.recommender.movies["title"] == movie]["movieId"].to_list()
+        if self.is_anime:
+            for movie in self.selected_movies:
+                self.selected_movies_ids += self.recommender.animes.loc[self.recommender.animes["title"] == movie]["Id"].to_list()
+        else:
+            for movie in self.selected_movies:
+                self.selected_movies_ids += self.recommender.movies.loc[self.recommender.movies["title"] == movie]["Id"].to_list()
         print(self.selected_movies_ids)
 
     def items_selected(self, event):
@@ -135,13 +140,18 @@ class GUI:
         for movie in self.selected_movies_ids:
             movie_rating += [(movie, 5)]
         self.recommender.create_new_user(1, movie_rating)
-        recommendation = self.recommender.recommend(5)
+        recommendation = self.recommender.recommend(5, self.is_anime)
         print(recommendation)
         result = ""
         result2 = []
-        for movie in recommendation:
-            result += self.recommender.movies.loc[self.recommender.movies["movieId"] == movie[0]]["title"].to_string() + ", "
-            result2 += [self.recommender.movies.loc[self.recommender.movies["movieId"] == movie[0]]["title"].to_string()]
+        if self.is_anime:
+            for movie in recommendation:
+                result += self.recommender.animes.loc[self.recommender.animes["Id"] == movie[0]]["title"].to_string() + ", "
+                result2 += [self.recommender.animes.loc[self.recommender.animes["Id"] == movie[0]]["title"].to_string()]
+        else:
+            for movie in recommendation:
+                result += self.recommender.movies.loc[self.recommender.movies["Id"] == movie[0]]["title"].to_string() + ", "
+                result2 += [self.recommender.movies.loc[self.recommender.movies["Id"] == movie[0]]["title"].to_string()]
         self.label.config(text = "Empfehlung: "+result)
         self.update_list_of_recommended_movies(result2)
 
@@ -213,7 +223,7 @@ class GUI:
 # # movies = recommend(5)
 
 # # for movie in movies:
-# #     print(movielist.loc[movielist["movieId"] == movie[0]])
+# #     print(movielist.loc[movielist["Id"] == movie[0]])
 
 # # handle event
 # def items_selected(event):

@@ -5,12 +5,11 @@ Tetris
 
 from recommender_system import Recommender
 from user_interface import *
-from time import time
 
 state = 0
 previous_state = 0
 recommender = Recommender()
-g = GUI(recommender)
+g = GUI(recommender, True)
 g.init_all()
 
 g.root.mainloop()
