@@ -151,21 +151,61 @@ class Recommender:
         return result
 
     def k_nearest_neighbor_item(self, k: int, movieId: int, amount: int, anime=False) -> list:
-        ratings = self.ratings
+        ratings = self.ratings if not anime else self.anime_ratings
+        distances = {}
         if anime:
             ratings = self.anime_ratings
-        new_user = self.new_user
-        neighbors = []
         movie_data = ratings.loc[ratings["Id"] == movieId]
-        movie_rating = np.ndarray()
-        for user_id in range(73516):
-            rating = movie_data.loc[movie_data["userId"] == user_id]
-            if rating.empty:
-                movie_rating[user_id] = -1
-                continue
-            movie_rating[user_id] = rating
+        # print(movie_data)
+        # movie_rating = np.ndarray(shape=movie_data["userId"].count())
+        users_that_rated_movie = {}
+        for user_id in movie_data["userId"]:
+            users_that_rated_movie[user_id] = movie_data.loc[movie_data["userId"] == user_id]["rating"].to_list()[0]
+
+        for movie in ratings["Id"]:
+            for user in ratings.loc[ratings["Id"] == movie]["userId"]:
+                if user not in users_that_rated_movie:
+                    continue
+                # new_user_rating = new_user.loc[new_user["Id"] == movie_id]["rating"].tolist()
+
+                # if len(new_user_rating) == 0:
+                #     amount_same_movies -= 1
+                #     continue
+
+                # user_rating = user_data.loc[user_data["Id"] == movie_id]["rating"].tolist()
+                # if user_rating[0] == -1:
+                #     continue
+                # distance: float = user_rating[0] - new_user_rating[0]
+                # distances += [abs(distance)]
+
+        # movies = self.animes["Id"] if anime else self.movies["Id"]
+        # for movie in movies:
+        #     ratings_temp_movie = ratings.loc[ratings["Id"] == movie]
+        #     temp_movie_rating = np.ndarray(shape=movie_data["userId"].count())
+
+        #     for user in users_that_rated_movie:
+        #         rating = ratings_temp_movie.loc[ratings_temp_movie["userId"] == user]
+        #         if rating.empty:
+        #             continue
+            
+        #     if movie == movieId:
+        #         continue
+        #     temp_rating = np.ndarray(shape=amount)
+        #     temp_movie_data = ratings.loc[ratings["Id"] == movie]
+        #     for user_id in range(amount):
+        #         rating = temp_movie_data.loc[temp_movie_data["userId"] == user_id]
+        #         if rating.empty:
+        #             temp_rating[user_id] = -1
+        #             continue
+        #         temp_rating[user_id] = rating["rating"]
+        #     distances[movie] = np.linalg.norm(movie_rating - temp_rating)
+        #     print(distances)
+
+        # sorted_distances = sorted(distances.items(), key=lambda x: x[1], reverse=True)
+        # print(sorted_distances)
+
 
 
 
 # x = Recommender()
-# x.k_nearest_neighbor_item(5, 5, 5, True)
+# x.k_nearest_neighbor_item(5, 5, 100, True)

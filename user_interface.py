@@ -138,7 +138,10 @@ class GUI:
         self.get_movie_ids()
         movie_rating = []
         for movie in self.selected_movies_ids:
-            movie_rating += [(movie, 5)]
+            if self.is_anime:
+                movie_rating += [(movie, 10)]
+            else:
+                movie_rating += [(movie, 5)]
         self.recommender.create_new_user(1, movie_rating)
         recommendation = self.recommender.recommend(5, self.is_anime)
         print(recommendation)
