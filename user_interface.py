@@ -15,9 +15,9 @@ class GUI:
         self.selected_indices = []
 
     def init_window(self):
-        self.root.geometry('1000x500')
+        self.root.geometry('1000x600')
         self.root.resizable(True, True)
-        self.root.title('Filme Empfehler')
+        self.root.title('Empfehlungsdienst')
 
     def init_list(self):
         movies_var = tk.StringVar(value=self.all_movies)
@@ -35,8 +35,8 @@ class GUI:
         self.listbox_of_selected_items = tk.Listbox(
             self.root,
             listvariable=selected_movies_var,
-            height=20,
-            width=100,
+            height=8,
+            width=80,
             selectmode='single')
         self.listbox_of_selected_items.pack(side="left")
         self.listbox_of_selected_items.bind('<<ListboxSelect>>', self.items_selected_of_selected_movies_list)
@@ -46,8 +46,8 @@ class GUI:
         self.listbox_of_recommended_movies = tk.Listbox(
             self.root,
             listvariable=recommended,
-            height=20,
-            width=100,
+            height=8,
+            width=80,
             selectmode='single')
         self.listbox_of_recommended_movies.pack(side="right")
 
@@ -155,7 +155,7 @@ class GUI:
             for movie in recommendation:
                 result += self.recommender.movies.loc[self.recommender.movies["Id"] == movie[0]]["title"].to_string() + ", "
                 result2 += [self.recommender.movies.loc[self.recommender.movies["Id"] == movie[0]]["title"].to_string()]
-        self.label.config(text = "Empfehlung: "+result)
+        # self.label.config(text = "Empfehlung: "+result)
         self.update_list_of_recommended_movies(result2)
 
     def init_all(self):
@@ -163,11 +163,11 @@ class GUI:
         self.init_list()
         self.init_text_field()
         self.init_search_button()
-        self.init_rate_button()
+        # self.init_rate_button()
         self.init_recommend_button()
-        self.init_label()
+        # self.init_label()
         self.init_list_of_selected_items()
-        self.init_list_of_recommended_movies()#
+        self.init_list_of_recommended_movies()
 
 # # create the root window
 # root = tk.Tk()

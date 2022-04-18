@@ -9,7 +9,7 @@ from user_interface import *
 state = 0
 previous_state = 0
 recommender = Recommender()
-g = GUI(recommender, True)
+g = GUI(recommender, False)
 g.init_all()
 
 g.root.mainloop()
