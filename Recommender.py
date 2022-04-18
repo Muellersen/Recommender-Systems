@@ -1,6 +1,6 @@
 """
-Copyright 2020 Patrick Müller
-Tetris
+Copyright 2022 Patrick Müller
+Recommender-System
 """
 
 from recommender_system import Recommender
