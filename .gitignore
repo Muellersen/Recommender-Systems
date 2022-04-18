@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-ml-latest-small/
-# archiveAnime/
+# ml-latest-small/
+archiveAnime/
